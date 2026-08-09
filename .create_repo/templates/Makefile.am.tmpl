@@ -1,18 +1,18 @@
 bin_PROGRAMS = @@PROJECT_NAME@@
 @@PROJECT_NAME_CANON@@_SOURCES = src/main.@@SRC_EXT@@
-@@PROJECT_NAME_CANON@@_CFLAGS = -std=@@STD@@ -Wall -Wextra -Wpedantic -Iinclude
+@@PROJECT_NAME_CANON@@_@@FLAGS_VAR@@ = -std=@@STD@@ -Wall -Wextra -Wpedantic -Iinclude
 @@PROJECT_NAME_CANON@@_LDFLAGS =
 
 if DEBUG
-@@PROJECT_NAME_CANON@@_CFLAGS += -g -O0
+@@PROJECT_NAME_CANON@@_@@FLAGS_VAR@@ += -g -O0
 endif
 
 if ASAN
-@@PROJECT_NAME_CANON@@_CFLAGS += -fsanitize=address,undefined -g -O0
+@@PROJECT_NAME_CANON@@_@@FLAGS_VAR@@ += -fsanitize=address,undefined -g -O0
 @@PROJECT_NAME_CANON@@_LDFLAGS += -fsanitize=address,undefined
 endif
 
-.PHONY: format lint
+.PHONY: format lint help
 
 # automake always links bin_PROGRAMS at the top level - there's no native
 # option to change that. Mirror the result into build/ to match the other
@@ -20,6 +20,7 @@ endif
 all-local: $(bin_PROGRAMS)
 	@mkdir -p build
 	@cp -f @@PROJECT_NAME@@$(EXEEXT) build/
+	@echo "built: build/@@PROJECT_NAME@@$(EXEEXT)"
 
 clean-local:
 	rm -rf build
@@ -29,3 +30,13 @@ format:
 
 lint:
 	@./scripts/lint.sh
+
+help:
+	@echo "targets:"
+	@echo "  make              build @@PROJECT_NAME@@ (run ./bootstrap && ./configure first)"
+	@echo "  make check        run the test suite"
+	@echo "  make format       run scripts/format.sh"
+	@echo "  make lint         run scripts/lint.sh"
+	@echo "  make install      install to --prefix"
+	@echo "  make clean        remove build artifacts"
+	@echo "  make distclean    clean + remove all generated autotools files"

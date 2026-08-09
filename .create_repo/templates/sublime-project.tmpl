@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "folder_exclude_patterns": ["build", ".git"]
+    }
+  ],
+  "build_systems": [
+    {
+      "name": "@@PROJECT_NAME@@",
+      "shell_cmd": "@@BUILD_CMD@@",
+      "working_dir": "$project_path"
+    }
+  ]
+}

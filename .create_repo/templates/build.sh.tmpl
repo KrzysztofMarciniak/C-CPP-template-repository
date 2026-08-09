@@ -7,7 +7,21 @@ STD="@@STD@@"
 CFLAGS="-std=$STD -Wall -Wextra -Wpedantic -Iinclude"
 OUT="build/@@PROJECT_NAME@@"
 
-mkdir -p build
+usage() {
+  cat <<EOF
+Usage: ./build.sh [command]
+
+  (none)   normal release build
+  debug    build with -g -O0
+  asan     build with ASan/UBSan
+  run      build, then run the binary
+  install  build, then install to PREFIX (default /usr/local)
+  clean    remove build/
+  format   run scripts/format.sh
+  lint     run scripts/lint.sh
+  help     show this message
+EOF
+}
 
 case "${1:-}" in
   debug)  CFLAGS="$CFLAGS -g -O0" ;;
@@ -15,9 +29,29 @@ case "${1:-}" in
   clean)  rm -rf build; exit 0 ;;
   format) exec ./scripts/format.sh ;;
   lint)   exec ./scripts/lint.sh ;;
+  help|-h|--help) usage; exit 0 ;;
 esac
+
+if ! command -v "$CC" >/dev/null 2>&1; then
+  echo "build.sh: error: compiler '$CC' not found" >&2
+  exit 1
+fi
+
+mkdir -p build
 
 # shellcheck disable=SC2086
 $CC $CFLAGS -o "$OUT" src/*.@@SRC_EXT@@
 
 echo "built: $OUT"
+
+case "${1:-}" in
+  run)
+    exec "./$OUT"
+    ;;
+  install)
+    PREFIX="${PREFIX:-/usr/local}"
+    install -d "${DESTDIR:-}$PREFIX/bin"
+    install -m 755 "$OUT" "${DESTDIR:-}$PREFIX/bin/@@PROJECT_NAME@@"
+    echo "installed: ${DESTDIR:-}$PREFIX/bin/@@PROJECT_NAME@@"
+    ;;
+esac

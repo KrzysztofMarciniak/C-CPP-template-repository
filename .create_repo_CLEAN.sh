@@ -68,6 +68,9 @@ TARGETS=(
   ".exrc"
   ".vimrc"
   ".dir-locals.el"
+  ".vscode"
+  "compile_flags.txt"
+  "compile_commands.json"
   "configure~"
 )
 
@@ -75,6 +78,11 @@ existing=()
 for t in "${TARGETS[@]}"; do
   [ -e "$t" ] && existing+=("$t")
 done
+
+# the Sublime project file's name is the scaffolded project's name, so it
+# can't be a fixed entry in TARGETS above - glob for it instead.
+sublime_projects=(./*.sublime-project)
+[ -e "${sublime_projects[0]:-}" ] && existing+=("${sublime_projects[@]}")
 
 if [ "${#existing[@]}" -eq 0 ]; then
   echo "Nothing to clean in $SCRIPT_DIR"

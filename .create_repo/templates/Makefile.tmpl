@@ -1,23 +1,28 @@
 CC       := @@CC@@
 STD      := @@STD@@
+PREFIX   := /usr/local
 CFLAGS   := -std=$(STD) -Wall -Wextra -Wpedantic -Iinclude
 LDFLAGS  :=
 
 SRC      := $(wildcard src/*.@@SRC_EXT@@)
 OBJ      := $(SRC:src/%.@@SRC_EXT@@=build/%.o)
+DEP      := $(OBJ:.o=.d)
 BIN      := build/@@PROJECT_NAME@@
 
-.PHONY: all run debug asan clean test format lint
+.PHONY: all run debug asan clean test format lint install uninstall help
 
 all: $(BIN)
 
 $(BIN): $(OBJ)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
+	@echo "built: $@"
+
+-include $(DEP)
 
 build/%.o: src/%.@@SRC_EXT@@
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
 
 run: all
 	./$(BIN)
@@ -38,5 +43,25 @@ format:
 lint:
 	@./scripts/lint.sh
 
+install: all
+	install -d $(DESTDIR)$(PREFIX)/bin
+	install -m 755 $(BIN) $(DESTDIR)$(PREFIX)/bin/@@PROJECT_NAME@@
+
+uninstall:
+	rm -f $(DESTDIR)$(PREFIX)/bin/@@PROJECT_NAME@@
+
 clean:
 	rm -rf build
+
+help:
+	@echo "targets:"
+	@echo "  all        build $(BIN) (default)"
+	@echo "  run        build and run"
+	@echo "  debug      build with -g -O0"
+	@echo "  asan       build with ASan/UBSan"
+	@echo "  test       run the test suite"
+	@echo "  format     run scripts/format.sh"
+	@echo "  lint       run scripts/lint.sh"
+	@echo "  install    install to PREFIX (default $(PREFIX))"
+	@echo "  uninstall  remove installed binary"
+	@echo "  clean      remove build/"

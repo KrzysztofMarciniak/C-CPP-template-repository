@@ -31,17 +31,19 @@ EOF
       ;;
     *)
       echo "configure: unknown option '$arg'" >&2
+      echo "configure: try './configure --help'" >&2
       exit 1
       ;;
   esac
 done
 
-echo "checking for $CC_OPT... "
+printf 'checking for %s... ' "$CC_OPT"
 if ! command -v "$CC_OPT" >/dev/null 2>&1; then
-  echo "  not found" >&2
+  echo "not found"
+  echo "configure: error: no compiler found; install one or pass --cc=COMPILER" >&2
   exit 1
 fi
-echo "  found: $(command -v "$CC_OPT")"
+echo "$(command -v "$CC_OPT")"
 
 CFLAGS="-std=@@STD@@ -Wall -Wextra -Wpedantic -Iinclude"
 if [ "$DEBUG" -eq 1 ]; then
@@ -62,7 +64,6 @@ LDFLAGS  = $LDFLAGS
 EOF
 
 echo
-echo "configured:"
 echo "  compiler: $CC_OPT"
 echo "  prefix:   $PREFIX"
 echo "  cflags:   $CFLAGS"

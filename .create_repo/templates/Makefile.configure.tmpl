@@ -7,9 +7,10 @@ LDFLAGS  ?=
 
 SRC      := $(wildcard src/*.@@SRC_EXT@@)
 OBJ      := $(SRC:src/%.@@SRC_EXT@@=build/%.o)
+DEP      := $(OBJ:.o=.d)
 BIN      := build/@@PROJECT_NAME@@
 
-.PHONY: all run clean install uninstall format lint test
+.PHONY: all run clean distclean install uninstall format lint test help
 
 all: config.mk $(BIN)
 
@@ -20,10 +21,13 @@ config.mk:
 $(BIN): $(OBJ)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
+	@echo "built: $@"
+
+-include $(DEP)
 
 build/%.o: src/%.@@SRC_EXT@@
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
 
 run: all
 	./$(BIN)
@@ -49,3 +53,15 @@ clean:
 
 distclean: clean
 	rm -f config.mk
+
+help:
+	@echo "targets:"
+	@echo "  all        build $(BIN) (run ./configure first)"
+	@echo "  run        build and run"
+	@echo "  install    install to PREFIX"
+	@echo "  uninstall  remove installed binary"
+	@echo "  format     run scripts/format.sh"
+	@echo "  lint       run scripts/lint.sh"
+	@echo "  test       run the test suite"
+	@echo "  clean      remove build/"
+	@echo "  distclean  clean + remove config.mk"

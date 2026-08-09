@@ -8,11 +8,41 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+option(ENABLE_ASAN "Build with AddressSanitizer/UBSan" OFF)
+
+# Must be set before the target is defined, or CMake won't actually emit
+# compile_commands.json for it.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 file(GLOB SOURCES "src/*.@@SRC_EXT@@")
 add_executable(@@PROJECT_NAME@@ ${SOURCES})
 target_include_directories(@@PROJECT_NAME@@ PRIVATE include)
+target_compile_options(@@PROJECT_NAME@@ PRIVATE -Wall -Wextra -Wpedantic)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+if(ENABLE_ASAN)
+  target_compile_options(@@PROJECT_NAME@@ PRIVATE -fsanitize=address,undefined -g -O0)
+  target_link_options(@@PROJECT_NAME@@ PRIVATE -fsanitize=address,undefined)
+endif()
+
+# Symlink compile_commands.json into the source root so clangd (and other
+# LSP-based editors) find it without extra configuration - CMake writes the
+# real file into the build dir during the generate step, which runs after
+# this line, but the symlink target doesn't need to exist yet to create it.
+if(NOT CMAKE_HOST_WIN32)
+  file(CREATE_LINK "${CMAKE_BINARY_DIR}/compile_commands.json"
+       "${CMAKE_SOURCE_DIR}/compile_commands.json" SYMBOLIC)
+endif()
+
+# Mirror the binary into build/ so it lands in the same place as the other
+# build modes (make/configure/build.sh) for consistency.
+set_target_properties(@@PROJECT_NAME@@ PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+
+add_custom_command(TARGET @@PROJECT_NAME@@ POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E echo "built: $<TARGET_FILE:@@PROJECT_NAME@@>"
+  VERBATIM)
+
+include(GNUInstallDirs)
+install(TARGETS @@PROJECT_NAME@@ RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_custom_target(format COMMAND ${CMAKE_SOURCE_DIR}/scripts/format.sh)
 add_custom_target(lint COMMAND ${CMAKE_SOURCE_DIR}/scripts/lint.sh)
