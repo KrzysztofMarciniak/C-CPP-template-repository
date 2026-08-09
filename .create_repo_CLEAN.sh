@@ -38,10 +38,16 @@ TARGETS=(
   "build"
   "tests"
   "Makefile"
+  "Makefile.in"
   "CMakeLists.txt"
   "build.sh"
+  "bootstrap"
   "configure"
   "config.mk"
+  "config.status"
+  "config.log"
+  "autom4te.cache"
+  "aclocal.m4"
   "scripts"
   ".gitignore"
   "README.md"
@@ -51,6 +57,8 @@ TARGETS=(
   ".clang-tidy"
   ".editorconfig"
   ".exrc"
+  ".vimrc"
+  ".dir-locals.el"
 )
 
 existing=()
