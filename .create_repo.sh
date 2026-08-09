@@ -50,7 +50,7 @@ main() {
 
   generate_gitignore
   generate_readme
-  generate_exrc
+  generate_editors_files
 
   [ "$LICENSE" != "None" ] && generate_license
   [ "$TEST_FW" != "none" ] && generate_tests
