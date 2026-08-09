@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.15)
+project(@@PROJECT_NAME@@ LANGUAGES @@CMAKE_LANG@@)
+
+set(CMAKE_@@CMAKE_STD_VAR@@_STANDARD @@CMAKE_STD_NUM@@)
+set(CMAKE_@@CMAKE_STD_VAR@@_STANDARD_REQUIRED ON)
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
+file(GLOB SOURCES "src/*.@@SRC_EXT@@")
+add_executable(@@PROJECT_NAME@@ ${SOURCES})
+target_include_directories(@@PROJECT_NAME@@ PRIVATE include)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+add_custom_target(format COMMAND ${CMAKE_SOURCE_DIR}/scripts/format.sh)
+add_custom_target(lint COMMAND ${CMAKE_SOURCE_DIR}/scripts/lint.sh)
+
+enable_testing()
+if(EXISTS "${CMAKE_SOURCE_DIR}/tests/CMakeLists.txt")
+  add_subdirectory(tests)
+endif()

@@ -1,0 +1,42 @@
+CC       := @@CC@@
+STD      := @@STD@@
+CFLAGS   := -std=$(STD) -Wall -Wextra -Wpedantic -Iinclude
+LDFLAGS  :=
+
+SRC      := $(wildcard src/*.@@SRC_EXT@@)
+OBJ      := $(SRC:src/%.@@SRC_EXT@@=build/%.o)
+BIN      := build/@@PROJECT_NAME@@
+
+.PHONY: all run debug asan clean test format lint
+
+all: $(BIN)
+
+$(BIN): $(OBJ)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
+
+build/%.o: src/%.@@SRC_EXT@@
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+run: all
+	./$(BIN)
+
+debug: CFLAGS += -g -O0
+debug: all
+
+asan: CFLAGS += -fsanitize=address,undefined -g -O0
+asan: LDFLAGS += -fsanitize=address,undefined
+asan: all
+
+test:
+	@echo "wire up tests/ here (see tests/README or generate_tests output)"
+
+format:
+	@./scripts/format.sh
+
+lint:
+	@./scripts/lint.sh
+
+clean:
+	rm -rf build

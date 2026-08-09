@@ -1,0 +1,51 @@
+-include config.mk
+
+CC       ?= @@CC@@
+PREFIX   ?= /usr/local
+CFLAGS   ?= -std=@@STD@@ -Wall -Wextra -Wpedantic -Iinclude
+LDFLAGS  ?=
+
+SRC      := $(wildcard src/*.@@SRC_EXT@@)
+OBJ      := $(SRC:src/%.@@SRC_EXT@@=build/%.o)
+BIN      := build/@@PROJECT_NAME@@
+
+.PHONY: all run clean install uninstall format lint test
+
+all: config.mk $(BIN)
+
+config.mk:
+	@echo "note: config.mk not found - run ./configure first (using defaults for now)"
+	@touch config.mk
+
+$(BIN): $(OBJ)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
+
+build/%.o: src/%.@@SRC_EXT@@
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+run: all
+	./$(BIN)
+
+install: all
+	install -d $(DESTDIR)$(PREFIX)/bin
+	install -m 755 $(BIN) $(DESTDIR)$(PREFIX)/bin/@@PROJECT_NAME@@
+
+uninstall:
+	rm -f $(DESTDIR)$(PREFIX)/bin/@@PROJECT_NAME@@
+
+format:
+	@./scripts/format.sh
+
+lint:
+	@./scripts/lint.sh
+
+test:
+	@echo "wire up tests/ here"
+
+clean:
+	rm -rf build
+
+distclean: clean
+	rm -f config.mk

@@ -1,0 +1,23 @@
+#!/bin/sh
+# POSIX build script - no make/cmake dependency required.
+set -eu
+
+CC="@@CC@@"
+STD="@@STD@@"
+CFLAGS="-std=$STD -Wall -Wextra -Wpedantic -Iinclude"
+OUT="build/@@PROJECT_NAME@@"
+
+mkdir -p build
+
+case "${1:-}" in
+  debug)  CFLAGS="$CFLAGS -g -O0" ;;
+  asan)   CFLAGS="$CFLAGS -fsanitize=address,undefined -g -O0" ;;
+  clean)  rm -rf build; exit 0 ;;
+  format) exec ./scripts/format.sh ;;
+  lint)   exec ./scripts/lint.sh ;;
+esac
+
+# shellcheck disable=SC2086
+$CC $CFLAGS -o "$OUT" src/*.@@SRC_EXT@@
+
+echo "built: $OUT"

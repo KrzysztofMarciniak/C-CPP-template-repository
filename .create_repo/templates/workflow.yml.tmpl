@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        compiler: [gcc, clang]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            sudo apt-get install -y gcc g++ make cmake
+          else
+            sudo apt-get install -y clang cmake
+          fi
+
+      - name: Build (make)
+        if: hashFiles('Makefile') != ''
+        run: |
+          if [ "${{ matrix.compiler }}" = "clang" ]; then
+            make CC=clang
+          else
+            make
+          fi
+
+      - name: Build (cmake)
+        if: hashFiles('CMakeLists.txt') != ''
+        run: |
+          CC=${{ matrix.compiler }}
+          cmake -B build -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=${CC/gcc/g++}
+          cmake --build build
+
+      - name: Build (build.sh)
+        if: hashFiles('build.sh') != ''
+        run: |
+          chmod +x build.sh
+          CC=${{ matrix.compiler }} ./build.sh
