@@ -50,6 +50,7 @@ main() {
 
   generate_gitignore
   generate_readme
+  generate_exrc
 
   [ "$LICENSE" != "None" ] && generate_license
   [ "$TEST_FW" != "none" ] && generate_tests

@@ -50,6 +50,7 @@ TARGETS=(
   ".clang-format"
   ".clang-tidy"
   ".editorconfig"
+  ".exrc"
 )
 
 existing=()
