@@ -1,7 +1,7 @@
 bin_PROGRAMS = @@PROJECT_NAME@@
 @@PROJECT_NAME@@_SOURCES = src/main.@@EXT@@
-@@PROJECT_NAME@@_CFLAGS = -Iinclude
-@@PROJECT_NAME@@_LDFLAGS = 
+@@PROJECT_NAME@@_CFLAGS = -std=@@STD@@ -Wall -Wextra -Wpedantic -Iinclude
+@@PROJECT_NAME@@_LDFLAGS =
 
 if DEBUG
 @@PROJECT_NAME@@_CFLAGS += -g -O0
