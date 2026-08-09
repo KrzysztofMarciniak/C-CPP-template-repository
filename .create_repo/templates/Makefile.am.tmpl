@@ -1,0 +1,13 @@
+bin_PROGRAMS = @@PROJECT_NAME@@
+@@PROJECT_NAME@@_SOURCES = src/main.@@EXT@@
+@@PROJECT_NAME@@_CFLAGS = -Iinclude
+@@PROJECT_NAME@@_LDFLAGS = 
+
+if DEBUG
+@@PROJECT_NAME@@_CFLAGS += -g -O0
+endif
+
+if ASAN
+@@PROJECT_NAME@@_CFLAGS += -fsanitize=address,undefined -g -O0
+@@PROJECT_NAME@@_LDFLAGS += -fsanitize=address,undefined
+endif
