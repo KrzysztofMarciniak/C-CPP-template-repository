@@ -6,6 +6,12 @@ generate_autoconf() {
   render_template "$TEMPLATES/Makefile.am.tmpl" "Makefile.am"
   render_template "$TEMPLATES/bootstrap.tmpl" "bootstrap"
   chmod +x "bootstrap"
-  echo "==> running bootstrap"
-  ./bootstrap
+
+  if command -v autoreconf >/dev/null 2>&1; then
+    echo "==> running bootstrap"
+    ./bootstrap
+  else
+    echo "  autoreconf not found - skipping bootstrap for now."
+    echo "  install autoconf/automake/libtool, then run: ./bootstrap && ./configure && make"
+  fi
 }

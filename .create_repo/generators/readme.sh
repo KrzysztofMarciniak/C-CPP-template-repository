@@ -54,6 +54,19 @@ make install                # respects PREFIX / DESTDIR
 EOF
 )
       ;;
+    autoconf)
+      build_instructions=$(cat <<'EOF'
+```sh
+./bootstrap                # runs autoreconf, needs autoconf/automake/libtool
+./configure
+./configure --enable-debug
+./configure --enable-asan
+make
+make install
+```
+EOF
+)
+      ;;
   esac
   build_instructions="${build_instructions//PROJECT_NAME_PLACEHOLDER/$PROJECT_NAME}"
 

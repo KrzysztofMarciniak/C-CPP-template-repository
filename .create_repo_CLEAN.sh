@@ -43,11 +43,20 @@ TARGETS=(
   "build.sh"
   "bootstrap"
   "configure"
+  "configure.ac"
+  "Makefile.am"
   "config.mk"
   "config.status"
   "config.log"
   "autom4te.cache"
   "aclocal.m4"
+  "compile"
+  "depcomp"
+  "install-sh"
+  "missing"
+  "ar-lib"
+  "stamp-h1"
+  ".deps"
   "scripts"
   ".gitignore"
   "README.md"
@@ -59,6 +68,7 @@ TARGETS=(
   ".exrc"
   ".vimrc"
   ".dir-locals.el"
+  "configure~"
 )
 
 existing=()
@@ -69,6 +79,13 @@ done
 if [ "${#existing[@]}" -eq 0 ]; then
   echo "Nothing to clean in $SCRIPT_DIR"
   exit 0
+fi
+
+if [ -f "configure.ac" ]; then
+  echo "Note: this is an autotools project - the built binary lives in the repo"
+  echo "root (not build/) and isn't in the list below since its name varies."
+  echo "Run 'make distclean' first if you want it removed too."
+  echo
 fi
 
 echo "WARNING: this will permanently delete the following from:"

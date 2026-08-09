@@ -33,7 +33,7 @@ render_template() {
   local src="$1" dst="$2" content
   mkdir -p "$(dirname "$dst")"
   content="$(cat "$src")"
-  for token in PROJECT_NAME AUTHOR YEAR LANG STD SRC_EXT CC BUILD LICENSE \
+  for token in PROJECT_NAME PROJECT_NAME_CANON AUTHOR YEAR LANG STD SRC_EXT CC BUILD LICENSE \
                TEST_FW CMAKE_LANG CMAKE_STD_NUM CMAKE_STD_VAR; do
     local val="${!token:-}"
     content="${content//@@${token}@@/$val}"

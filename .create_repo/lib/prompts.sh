@@ -5,6 +5,10 @@
 
 collect_config() {
   PROJECT_NAME=$(ask "Project name" "$(basename "$PWD")")
+  # automake requires Makefile variable prefixes with no hyphens/dots - the
+  # binary name itself (bin_PROGRAMS) can keep them, but *_SOURCES/*_CFLAGS
+  # etc. can't. Mirror automake's own canonicalization here.
+  PROJECT_NAME_CANON=$(echo "$PROJECT_NAME" | sed 's/[^A-Za-z0-9]/_/g')
   AUTHOR=$(ask "Author name" "$(git config user.name 2>/dev/null || echo "Your Name")")
   YEAR=$(date +%Y)
 
@@ -38,6 +42,6 @@ collect_config() {
   USE_CI=$(choose "Add GitHub Actions CI?" "yes" "no")
   USE_LINT=$(choose "Add clang-format/clang-tidy/.editorconfig?" "yes" "no")
 
-  export PROJECT_NAME AUTHOR YEAR LANG STD SRC_EXT CC CMAKE_LANG CMAKE_STD_VAR \
+  export PROJECT_NAME PROJECT_NAME_CANON AUTHOR YEAR LANG STD SRC_EXT CC CMAKE_LANG CMAKE_STD_VAR \
          CMAKE_STD_NUM BUILD LICENSE TEST_FW USE_CI USE_LINT
 }

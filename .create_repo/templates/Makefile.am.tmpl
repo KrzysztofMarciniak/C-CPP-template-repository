@@ -1,13 +1,31 @@
 bin_PROGRAMS = @@PROJECT_NAME@@
-@@PROJECT_NAME@@_SOURCES = src/main.@@EXT@@
-@@PROJECT_NAME@@_CFLAGS = -std=@@STD@@ -Wall -Wextra -Wpedantic -Iinclude
-@@PROJECT_NAME@@_LDFLAGS =
+@@PROJECT_NAME_CANON@@_SOURCES = src/main.@@SRC_EXT@@
+@@PROJECT_NAME_CANON@@_CFLAGS = -std=@@STD@@ -Wall -Wextra -Wpedantic -Iinclude
+@@PROJECT_NAME_CANON@@_LDFLAGS =
 
 if DEBUG
-@@PROJECT_NAME@@_CFLAGS += -g -O0
+@@PROJECT_NAME_CANON@@_CFLAGS += -g -O0
 endif
 
 if ASAN
-@@PROJECT_NAME@@_CFLAGS += -fsanitize=address,undefined -g -O0
-@@PROJECT_NAME@@_LDFLAGS += -fsanitize=address,undefined
+@@PROJECT_NAME_CANON@@_CFLAGS += -fsanitize=address,undefined -g -O0
+@@PROJECT_NAME_CANON@@_LDFLAGS += -fsanitize=address,undefined
 endif
+
+.PHONY: format lint
+
+# automake always links bin_PROGRAMS at the top level - there's no native
+# option to change that. Mirror the result into build/ to match the other
+# build modes (make/cmake/build.sh/configure) for consistency.
+all-local: $(bin_PROGRAMS)
+	@mkdir -p build
+	@cp -f @@PROJECT_NAME@@$(EXEEXT) build/
+
+clean-local:
+	rm -rf build
+
+format:
+	@./scripts/format.sh
+
+lint:
+	@./scripts/lint.sh

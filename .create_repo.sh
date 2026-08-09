@@ -46,6 +46,7 @@ main() {
     cmake)           generate_cmake ;;
     posix-build.sh)  generate_posix_build ;;
     configure)       generate_configure ;;
+    autoconf)        generate_autoconf ;;
   esac
 
   generate_gitignore

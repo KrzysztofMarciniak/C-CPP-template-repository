@@ -1,11 +1,11 @@
 AC_INIT([@@PROJECT_NAME@@], [1.0])
-AC_CONFIG_SRCDIR([src/main.@@EXT@@])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AC_CONFIG_SRCDIR([src/main.@@SRC_EXT@@])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_PROG_CC
 AC_PROG_CXX
-AM_CONDITIONAL([DEBUG], [test "x$DEBUG" = "xyes"])
-AM_CONDITIONAL([ASAN], [test "x$ASAN" = "xyes"])
 AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [Build with debug symbols]), [DEBUG=$enableval], [DEBUG=no])
 AC_ARG_ENABLE([asan], AS_HELP_STRING([--enable-asan], [Build with ASAN/UBSAN]), [ASAN=$enableval], [ASAN=no])
+AM_CONDITIONAL([DEBUG], [test "x$DEBUG" = "xyes"])
+AM_CONDITIONAL([ASAN], [test "x$ASAN" = "xyes"])
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
