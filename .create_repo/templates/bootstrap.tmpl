@@ -1,0 +1,11 @@
+#!/bin/sh
+# bootstrap
+# Regenerate autotools files from configure.ac and Makefile.am
+# Run this after pulling changes or modifying configure.ac/Makefile.am
+
+set -e
+
+echo "Running autoreconf..."
+autoreconf -fiv
+
+echo "Done. Now run: ./configure && make"
