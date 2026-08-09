@@ -25,7 +25,7 @@ collect_config() {
   # numeric standard for CMake, e.g. c++17 -> 17, c11 -> 11
   CMAKE_STD_NUM=$(echo "$STD" | grep -o '[0-9]\+$')
 
-  BUILD=$(choose "Build system:" "make" "cmake" "posix-build.sh" "configure")
+  BUILD=$(choose "Build system:" "make" "cmake" "posix-build.sh" "configure" "autoconf")
 
   LICENSE=$(choose "License:" "MIT" "Apache-2.0" "GPL-3.0" "BSD-3-Clause" "None")
 
